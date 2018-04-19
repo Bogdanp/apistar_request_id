@@ -12,9 +12,15 @@ def fail() -> dict:
     raise exceptions.BadRequest("fail")
 
 
+def fail_2() -> dict:
+    raise RuntimeError("fail")
+
+
+
 routes = [
     Route("/", method="GET", handler=index),
     Route("/fail", method="GET", handler=fail),
+    Route("/fail-2", method="GET", handler=fail_2),
 ]
 
 event_hooks = [
@@ -65,4 +71,14 @@ def test_request_id_can_be_set_on_error(client):
     assert response.headers["x-request-id"] == "a-request-id"
 
     # And the request id for the current thread should be cleared
+    assert RequestId.get_request_id() is None
+
+
+def test_request_id_can_be_set_on_internal_error(client):
+    # Given that I have an existing request id
+    # When I make a request to the app
+    with pytest.raises(RuntimeError):
+        client.get("/fail-2", headers={"x-request-id": "a-request-id"})
+
+    # Then the request id should be set and subsequently cleared
     assert RequestId.get_request_id() is None

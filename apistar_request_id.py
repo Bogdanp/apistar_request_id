@@ -42,13 +42,10 @@ class RequestIdHooks:
     def on_request(self, x_request_id: http.Header = None) -> None:
         RequestId.set_request_id(x_request_id)
 
-    def on_response(self, response: http.Response) -> http.Response:
+    def on_response(self, response: http.Response) -> None:
         response.headers["x-request-id"] = RequestId.get_request_id()
         RequestId.clear_request_id()
-        return response
 
-    def on_error(self, response: http.Response, x_request_id: http.Header = None) -> http.Response:
-        RequestId.set_request_id(x_request_id)
+    def on_error(self, response: http.Response) -> None:
         response.headers["x-request-id"] = RequestId.get_request_id()
         RequestId.clear_request_id()
-        return response
