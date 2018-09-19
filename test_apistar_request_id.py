@@ -16,7 +16,6 @@ def fail_2() -> dict:
     raise RuntimeError("fail")
 
 
-
 routes = [
     Route("/", method="GET", handler=index),
     Route("/fail", method="GET", handler=fail),

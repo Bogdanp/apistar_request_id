@@ -43,9 +43,15 @@ class RequestIdHooks:
         RequestId.set_request_id(x_request_id)
 
     def on_response(self, response: http.Response) -> None:
-        response.headers["x-request-id"] = RequestId.get_request_id()
-        RequestId.clear_request_id()
+        try:
+            if response is not None:
+                response.headers["x-request-id"] = RequestId.get_request_id()
+        finally:
+            RequestId.clear_request_id()
 
     def on_error(self, response: http.Response) -> None:
-        response.headers["x-request-id"] = RequestId.get_request_id()
-        RequestId.clear_request_id()
+        try:
+            if response is not None:
+                response.headers["x-request-id"] = RequestId.get_request_id()
+        finally:
+            RequestId.clear_request_id()
